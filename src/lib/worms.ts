@@ -1,10 +1,24 @@
+export enum TargetType {
+	None,
+	Self,
+	Enemy,
+	Soldier
+}
+
 export class WormCard {
+	public attackCount: number;
+
 	constructor(
 		public name: string,
 		public attack: number,
 		public health: number,
-		public cost: number
-	) {}
+		public cost: number,
+		public targetType: TargetType = TargetType.Enemy,
+		public maxAttackCount: number = 1
+	) {
+		this.health = health;
+		this.attackCount = -1;
+	}
 
 	display(): Array<string> {
 		return [
@@ -14,12 +28,27 @@ export class WormCard {
 			'COST: ' + this.cost.toString()
 		];
 	}
+
+	turnReset() {
+		// A card cannot attack right after it is placed
+		if (this.attackCount == -1) {
+			this.attackCount = 0;
+		} else {
+			this.attackCount = this.maxAttackCount;
+		}
+	}
+
+	battle(attacker: WormCard) {
+		this.health -= attacker.attack;
+		attacker.health -= this.attack;
+	}
 }
 
 export class WormSpell {
 	constructor(
 		public name: string,
-		public cost: number
+		public cost: number,
+		public targetType: TargetType = TargetType.Enemy
 	) {}
 
 	display(): Array<string> {
@@ -34,39 +63,39 @@ function cardFromId(id: number): WormCard | WormSpell {
 		case 1:
 			return new WormCard('Inchworm', 2, 1, 1);
 		case 2:
-			return new WormCard('Mealworm', 0, 3, 1);
+			return new WormCard('Mealworm', 0, 3, 1, TargetType.Enemy, 0);
 		case 3:
 			return new WormCard('Earthworm', 3, 3, 2);
 		case 4:
-			return new WormSpell('Gummy Worm', 2);
+			return new WormSpell('Gummy Worm', 2, TargetType.Self);
 		case 5:
 			return new WormSpell('Tape Worm', 2);
 		case 100:
 			return new WormCard('Glow Worm', 2, 2, 2);
 		case 101:
-			return new WormCard('Silk Worm', 2, 2, 2);
-		case 102:
 			return new WormCard('Split Worm', 2, 2, 2);
+		case 102:
+			return new WormCard('Bait', 0, 3, 2, TargetType.Enemy, 0);
 		case 103:
-			return new WormCard('Bait', 0, 3, 2);
+			return new WormCard('Earworm', 0, 3, 2, TargetType.Enemy, 0);
 		case 104:
-			return new WormCard('Earworm', 0, 3, 2);
+			return new WormSpell('Rain', 3, TargetType.None);
 		case 105:
-			return new WormSpell('Rain', 3);
-		case 106:
-			return new WormSpell('Ringworm', 3);
+			return new WormSpell('Ringworm', 3, TargetType.None);
 		case 200:
 			return new WormCard('Soldier Worm', 6, 4, 4);
 		case 201:
-			return new WormCard('Worm Rider', 3, 5, 4); //x2 damage for 2 attacks
+			return new WormCard('Worm Rider', 3, 5, 4, TargetType.Enemy, 2); //x2 damage for 2 attacks
 		case 202:
 			return new WormCard('Wormsworth', 5, 5, 3);
 		case 203:
 			return new WormCard('Snake', 7, 7, 5);
 		case 204:
-			return new WormSpell('Early Bird', 3);
+			return new WormCard('Silk Worm', 1, 2, 2); // Traps enemy in silk, they cannot attack next turn
 		case 205:
-			return new WormSpell('Can of Worms', 3);
+			return new WormSpell('Early Bird', 3, TargetType.None);
+		case 206:
+			return new WormSpell('Can of Worms', 3, TargetType.None);
 		case 300:
 			return new WormCard('Computer Worm', 3, 3, 3); // Self replicates with +1 +1 stats
 		case 301:
@@ -89,7 +118,26 @@ class WormPlayer {
 		undefined
 	];
 
+	leaves: number = 0;
+
 	constructor(public health: number) {}
+}
+
+export function isValidTarget(
+	attacker: WormCard | WormSpell,
+	attackerP1: boolean,
+	targetP1: boolean
+) {
+	switch (attacker.targetType) {
+		case TargetType.None:
+			return false;
+		case TargetType.Self:
+			return attackerP1 == targetP1;
+		case TargetType.Enemy:
+			return attackerP1 != targetP1;
+		case TargetType.Soldier:
+			return attackerP1 != targetP1;
+	}
 }
 
 function randRange(min: number, max: number) {
@@ -101,6 +149,7 @@ export class Game {
 	public p2: WormPlayer;
 	public hand: Array<WormCard | WormSpell> = [];
 	public p1Turn: boolean = false;
+	private leavesPerTurn: number = 2;
 
 	constructor() {
 		this.p1 = new WormPlayer(50);
@@ -108,9 +157,18 @@ export class Game {
 	}
 
 	turn() {
-		this.hand = drawHand();
-		console.log('hi');
 		this.p1Turn = !this.p1Turn;
+
+		this.hand = drawHand();
+
+		if (this.p1Turn) {
+			this.p1.leaves += this.leavesPerTurn;
+		} else {
+			this.p2.leaves += this.leavesPerTurn;
+			if (this.leavesPerTurn < 5) {
+				this.leavesPerTurn++;
+			}
+		}
 	}
 }
 
@@ -120,9 +178,9 @@ function drawCard(): WormCard | WormSpell {
 	if (rarityRand < 10) {
 		return cardFromId(randRange(0, 5));
 	} else if (rarityRand < 20) {
-		return cardFromId(randRange(100, 106));
+		return cardFromId(randRange(100, 105));
 	} else if (rarityRand < 25) {
-		return cardFromId(randRange(200, 205));
+		return cardFromId(randRange(200, 206));
 	} else {
 		return cardFromId(randRange(300, 303));
 	}

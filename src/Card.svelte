@@ -7,12 +7,22 @@
 
 	export let id = -1;
 	export let onClick: (id: number) => void = () => {};
+
+	export let targeted = false;
+	export let highlighted = false;
+	export let selected = false;
+	export let tired = false;
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
-	class={'card ' + (blue ? 'blueBorder' : red ? 'redBorder' : '')}
+	class={'card' +
+		(blue ? ' blueBorder' : red ? ' redBorder' : '') +
+		(targeted ? ' targeted' : '') +
+		(highlighted ? ' highlighted' : '') +
+		(selected ? ' selected' : '') +
+		(tired ? ' tired' : '')}
 	on:click={() => {
 		onClick(id);
 	}}
@@ -21,8 +31,6 @@
 		{#each card.display() as stat}
 			<p>{stat}</p>
 		{/each}
-	{:else}
-		<p>Empty</p>
 	{/if}
 </div>
 
@@ -50,5 +58,21 @@
 
 	.redBorder {
 		border: 3px solid red;
+	}
+
+	.targeted {
+		border: 3px solid orange;
+	}
+
+	.highlighted {
+		border: 3px solid turquoise;
+	}
+
+	.selected {
+		border: 3px solid yellowgreen;
+	}
+
+	.tired {
+		border: 3px solid darkslategray;
 	}
 </style>

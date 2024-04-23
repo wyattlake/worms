@@ -63,47 +63,47 @@ function cardFromId(id: number): WormCard | WormSpell {
 		case 1:
 			return new WormCard('Inchworm', 2, 1, 1);
 		case 2:
-			return new WormCard('Mealworm', 0, 3, 1, TargetType.Enemy, 0);
+			return new WormCard('Mealworm', 0, 3, 1, TargetType.Enemy, 0); // Gives +1 health on death
 		case 3:
 			return new WormCard('Earthworm', 3, 3, 2);
 		case 4:
-			return new WormSpell('Gummy Worm', 2, TargetType.Self);
+			return new WormSpell('Gummy Worm', 2, TargetType.Self); // Heal spell
 		case 5:
-			return new WormSpell('Tape Worm', 2);
+			return new WormSpell('Tape Worm', 2); // Damage spell
 		case 100:
-			return new WormCard('Glow Worm', 2, 2, 2);
+			return new WormCard('Glow Worm', 2, 2, 2); // Must be killed before other worms
 		case 101:
-			return new WormCard('Split Worm', 2, 2, 2);
+			return new WormCard('Split Worm', 2, 2, 2); // Splits into two on death
 		case 102:
-			return new WormCard('Bait', 0, 3, 2, TargetType.Enemy, 0);
+			return new WormCard('Bait', 0, 3, 2, TargetType.Enemy, 0); // Damages attacker on death
 		case 103:
 			return new WormCard('Earworm', 0, 3, 2, TargetType.Enemy, 0);
 		case 104:
-			return new WormSpell('Rain', 3, TargetType.None);
+			return new WormSpell('Rain', 3, TargetType.None); // Heals all cards
 		case 105:
-			return new WormSpell('Ringworm', 3, TargetType.None);
+			return new WormSpell('Ringworm', 3, TargetType.None); // Damages all cards
 		case 200:
-			return new WormCard('Soldier Worm', 6, 4, 4);
+			return new WormCard('Soldier Worm', 6, 4, 4); // Can hit opponent directly
 		case 201:
 			return new WormCard('Worm Rider', 3, 5, 4, TargetType.Enemy, 2); //x2 damage for 2 attacks
 		case 202:
-			return new WormCard('Wormsworth', 5, 5, 3);
+			return new WormCard('Wormsworth', 5, 5, 3); // +2 draw cards if wormsworth is alive
 		case 203:
-			return new WormCard('Snake', 7, 7, 5);
+			return new WormCard('Snake', 6, 6, 5); // Can attack without being hit
 		case 204:
 			return new WormCard('Silk Worm', 1, 2, 2); // Traps enemy in silk, they cannot attack next turn
 		case 205:
-			return new WormSpell('Early Bird', 3, TargetType.None);
+			return new WormSpell('Early Bird', 3, TargetType.None); // Kills random enemy next turn
 		case 206:
-			return new WormSpell('Can of Worms', 3, TargetType.None);
+			return new WormSpell('Can of Worms', 3, TargetType.None); // Fills free spaces with worms
 		case 300:
-			return new WormCard('Computer Worm', 3, 3, 3); // Self replicates with +1 +1 stats
+			return new WormCard('Computer Worm', 2, 2, 4); // Self replicates on death with +1 +1 stats
 		case 301:
-			return new WormCard('Shai Hulud', 9, 9, 6);
+			return new WormCard('Shai Hulud', 9, 9, 6); // Gives spice card (spell) each turn which gives +2 ATK -1 DEF
 		case 302:
-			return new WormCard('Alaskan Bull Worm', 4, 4, 6); //Spawns two other 4 4 cards
+			return new WormCard('Alaskan Bull Worm', 4, 4, 6); //Spawns two other 4 4 cards to the left
 		case 303:
-			return new WormSpell('Wormhole', 3);
+			return new WormSpell('Wormhole', 3); // Swaps cards in the same column
 		default:
 			return new WormSpell('ERROR', -1);
 	}
